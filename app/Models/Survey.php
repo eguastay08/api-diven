@@ -16,11 +16,11 @@ class Survey extends Model
         'name',
         'date_init',
         'date_finally',
+        'max_answers',
         'status',
         'detail',
         'cod_project'
     ];
-
 
     /**
      * The attributes that should be cast.
@@ -36,7 +36,7 @@ class Survey extends Model
         return $this->belongsTo(Project::class,'cod_project');
     }
 
-    public function questions(){
-        return $this->hasMany(Question::class,'cod_survey');
+    public function sections(){
+        return $this->hasMany(Section::class,'cod_survey')->orderBy('order');
     }
 }

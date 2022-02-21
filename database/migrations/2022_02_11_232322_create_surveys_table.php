@@ -27,6 +27,7 @@ return new class extends Migration
             $table->foreign('cod_project')
                 ->references('cod_project')
                 ->on('projects')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->unique(['name','cod_project']);
         });
     }
 
