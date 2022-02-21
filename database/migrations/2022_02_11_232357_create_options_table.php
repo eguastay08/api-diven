@@ -22,6 +22,7 @@ return new class extends Migration
             $table->foreign('cod_question')
                 ->references('cod_question')
                 ->on('questions')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->unique(['option','cod_question']);
         });
     }
 
