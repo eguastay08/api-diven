@@ -24,7 +24,8 @@ class User extends Authenticatable
         'email',
         'gender',
         'password',
-        'photography'
+        'photography',
+        'cod_rol',
     ];
 
     /**
@@ -34,7 +35,12 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
+        'email_verified_at',
+        'active',
         'remember_token',
+        'google_id',
+        'created_at',
+        'updated_at'
     ];
 
     /**
@@ -55,4 +61,15 @@ class User extends Authenticatable
     public function projects(){
         return $this->belongsToMany(Project::class);
     }
+
+    /**
+     *
+     * Return the role of user
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function role(){
+        return $this->belongsTo(Role::class,'cod_rol');
+    }
+
 }

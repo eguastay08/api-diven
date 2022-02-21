@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('password')->nullable()->comment('users password');
             $table->text('photography')->nullable()->comment('user photography');
             $table->dateTime('email_verified_at')->nullable()->comment('email date verify');
+            $table->boolean('active')->default(1)->comment('User is active');
+            $table->string('google_id')->unique()->nullable()->comment('user google Id');
             $table->rememberToken();
             $table->timestamps();
             /*foreign keys*/
