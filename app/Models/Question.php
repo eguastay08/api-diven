@@ -17,11 +17,12 @@ class Question extends Model
         'required',
         'image',
         'type',
-        'cod_survey'
+        'order',
+        'cod_section'
     ];
 
-    public function survey(){
-        return $this->belongsTo(Survey::class,'cod_survey');
+    public function section(){
+        return $this->belongsTo(Section::class,'cod_section');
     }
 
     public function options(){
