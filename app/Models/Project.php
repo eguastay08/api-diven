@@ -16,7 +16,10 @@ class Project extends Model
         'resolution',
         'detail',
         'image',
-        'cod_dpa',
+        'cod_dpa'
+    ];
+
+    protected $hidden=[
         'create_at',
         'update_at'
     ];
