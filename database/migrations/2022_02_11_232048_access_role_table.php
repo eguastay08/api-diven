@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('access_role', function (Blueprint $table) {
             $table->unsignedBigInteger('cod_access')->comment('access identifier');
             $table->unsignedBigInteger('cod_rol')->comment('role identifier');
-            $table->boolean('active')->default(false)->comment('acess active');
             $table->timestamps();
             $table->primary(['cod_rol','cod_access']);
             $table->foreign('cod_rol')
