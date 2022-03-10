@@ -64,7 +64,6 @@ class SectionController extends Controller
             }
             $data['cod_survey']=$survey->cod_survey;
             $validate=\Validator::make($data,[
-                'name'=>'required|unique:sections,name,NULL,id,cod_survey,'.$data['cod_survey'],
                 'order'=>'integer|required',
                 'cod_survey'=>'required|exists:surveys,cod_survey'
             ]);
@@ -137,7 +136,6 @@ class SectionController extends Controller
                 }
             }
             $validate=\Validator::make($data,[
-                'name'=>'unique:sections,name,NULL,id,cod_survey,'.$section->cod_survey,
                 'order'=>'integer'
             ]);
             if ($validate->fails())

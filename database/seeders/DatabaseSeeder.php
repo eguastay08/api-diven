@@ -30,11 +30,11 @@ class DatabaseSeeder extends Seeder
 
         DB::table('menu')->insert([
             'cod_menu'=>'2',
-            'name'=>'Administrar Roles',
+            'name'=>'Roles',
             'order'=>'1',
             'icon'=>null,
-            'path'=>null,
-            'cod_menu_parent'=>null
+            'path'=>'/roles',
+            'cod_menu_parent'=>'1'
         ]);
 
         DB::table('menu')->insert([
@@ -42,17 +42,16 @@ class DatabaseSeeder extends Seeder
             'name'=>'Administrar Proyectos',
             'order'=>'3',
             'icon'=>null,
-            'path'=>null,
+            'path'=>'/projects',
             'cod_menu_parent'=>null
         ]);
-
         DB::table('menu')->insert([
             'cod_menu'=>'4',
-            'name'=>'Mis Proyectos',
+            'name'=>'Usuarios',
             'order'=>'3',
             'icon'=>null,
-            'path'=>null,
-            'cod_menu_parent'=>null
+            'path'=>'/users',
+            'cod_menu_parent'=>1
         ]);
 
         DB::table('roles')->insert([
@@ -66,7 +65,7 @@ class DatabaseSeeder extends Seeder
             'name'=>'Get all users',
             'endpoint'=>'/users',
             'method'=>'GET',
-            'cod_menu'=>1
+            'cod_menu'=>4
         ]);
 
         DB::table('access_role')->insert([
@@ -79,7 +78,7 @@ class DatabaseSeeder extends Seeder
             'name'=>'Register new user',
             'endpoint'=>'/users',
             'method'=>'POST',
-            'cod_menu'=>1
+            'cod_menu'=>4
         ]);
 
         DB::table('access_role')->insert([
@@ -92,7 +91,7 @@ class DatabaseSeeder extends Seeder
             'name'=>'update user',
             'endpoint'=>'/users',
             'method'=>'POST',
-            'cod_menu'=>1
+            'cod_menu'=>4
         ]);
 
         DB::table('access_role')->insert([
@@ -105,7 +104,7 @@ class DatabaseSeeder extends Seeder
             'name'=>'delete user',
             'endpoint'=>'/users',
             'method'=>'DELETE',
-            'cod_menu'=>1
+            'cod_menu'=>4
         ]);
 
         DB::table('access_role')->insert([

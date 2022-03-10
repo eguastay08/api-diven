@@ -19,15 +19,16 @@ class UserController extends Controller
     public function index(Request $request)
     {
         Controller::validatePermissions($request->user(),'GET','/users');
-
+        $search= $request->search ?? '';
         $data = User::select('users.*','roles.name as rol')
                 ->join('roles','users.cod_rol','=','roles.cod_rol')
+                ->orwhere('users.name','like','%'.$search.'%')
+                ->orwhere('users.lastname','like','%'.$search.'%')
+                ->orwhere('users.email','like','%'.$search.'%')
                 ->get();
-
         foreach ($data as $d){
             $this->generateAvatarUrl($d);
         }
-
         return $this->response('false', Response::HTTP_OK, '200 OK', $data);
     }
 
@@ -91,6 +92,7 @@ class UserController extends Controller
         try {
             $data=User::findOrFail($id);
             $data['role']=Role::find($data->cod_rol);
+            $this->generateAvatarUrl($data);
             unset($data->cod_rol);
             return $this->response('false', Response::HTTP_OK, '200 OK',$data);
         }catch (\Exception $e){
@@ -106,9 +108,11 @@ class UserController extends Controller
      */
     public function me(Request $request)
     {
+        $data=$request->user();
+        $data['access']=Role::find($data->cod_rol)->access;
+        $this->generateAvatarUrl($data);
         try {
-            $data=$request->user();
-            $data['role']=Role::find($data->cod_rol);
+
             unset($data->cod_rol);
             return $this->response('false', Response::HTTP_OK, '200 OK',$data);
         }catch (\Exception $e){
@@ -144,6 +148,7 @@ class UserController extends Controller
             'lastname',
             'gender',
             'password',
+            'email',
             'photography',
             'cod_rol',
             'active'
@@ -203,7 +208,17 @@ class UserController extends Controller
      * @param User $d
      */
     private function generateAvatarUrl(User $d){
+        $data['photography']=$d->photography;
+        $validate=\Validator::make($data,[
+            'photography'=>'active_url'
+        ]);
+
+        if (!$validate->fails()){
+            return;
+        }
+
         if(isset($d->photography)){
+
             $image=File::find($d->photography);
             $uri='/api/v1/image';
             $url=env('APP_URL').$uri."/".$image['name'];

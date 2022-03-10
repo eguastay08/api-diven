@@ -106,6 +106,7 @@ class RoleController extends Controller
      */
     public function update(Request $request, $id)
     {
+        $data=[];
         Controller::validatePermissions($request->user(),'PUT','/roles');
         $role=Role::findOrFail($id);
         $edit_permission=[

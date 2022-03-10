@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -68,34 +69,36 @@ class AuthController extends Controller
     }
 
     public function loginWithGoogle(Request $request){
+        try {
+            $user = Socialite::driver('google')->user();
 
-         $a= Socialite::driver('google')->user() ;
-         return $a->getEmail();
-      return   Socialite::driver('google')->user();
-       /* try {
-            return $user = Socialite::driver('google')->user();
-            $data_user = User::where('type_auth', '=', 'oidc')
-                ->where('email_inst', '=', $user->getEmail())
-                ->where('deleted', '=', false)
+            $data_user = User::where('email', '=', $user->getEmail())
+                ->where('active', '=', true)
                 ->first();
-            if ($data_user != null) {
-                $tokenResult = $data_user->createToken('Personal Access Token');
-                $token = $tokenResult->token;
-                $token->save();
-                $redirect_auth = env('KEYCLOAK_REDIRECT_AUTH');
-                $msj['change_success'] = 'Se actualizo el password correctamente';
-                $log = "The user '" . $data_user->id . "' logged in using keycloak.";
-                $this->log('info', $log, 'web', $data_user);
-                return redirect("$redirect_auth?access_token=$tokenResult->accessToken");
-            } else {
-                return response()->json([
-                    'message' => 'Unauthorized'], 401);
+            if(!isset($data_user)){
+                 $data=[
+                    'name'=>$user->user['given_name'],
+                    'lastname'=>$user->user['family_name'],
+                    'email'=>$user->getEmail(),
+                    'gender'=>null,
+                    'password'=>null,
+                    'photography'=>$user->getAvatar(),
+                    'cod_rol'=>2
+                ];
+                $data_user = User::create($data);
             }
+            $tokenResult = $data_user->createToken('Personal Access Token');
+            $token = $tokenResult->token;
+            $token->save();
+            $redirect_auth = env('GOOGLE_APP_REDIRECT_WITH_AUTH');
+            $log = "The user '" . $data_user->id . "' logged in using google.";
+            $this->log('info', $log, 'web', $data_user);
+            return redirect("$redirect_auth?access_token=$tokenResult->accessToken");
         }catch(\Exception $e){
             //return $e->getMessage();
             return response()->json([
                 'message' => 'Not Found'], 404);
-        }*/
+        }
 
     }
 

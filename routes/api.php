@@ -12,7 +12,8 @@ use \App\Http\Controllers\SectionController;
 use \App\Http\Controllers\ImageController;
 use \App\Http\Controllers\OptionController;
 use \App\Http\Controllers\AnswerController;
-
+use \App\Http\Controllers\MenuController;
+use \App\Http\Controllers\DpaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,12 +42,15 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:api')->group(function () {
         Route::resource('/users',UserController::class);
         Route::get('/me', [UserController::class, 'me']);
+        Route::get('/me/navigation', [MenuController::class, 'navigation']);
+        Route::get('/logout', [AuthController::class, 'logout']);
         Route::resource('/roles',RoleController::class);
         Route::post('/roles/{role}/access', [RoleController::class, 'setAccess']);
         Route::delete('/roles/{role}/access', [RoleController::class, 'removeAccess']);
         Route::get('/access', [AccessController::class, 'index']);
         Route::resource('/projects',ProjectController::class);
         Route::post('/projects/{project}/members',[ProjectController::class,'addUsers']);
+        Route::get('/projects/{project}/members',[ProjectController::class,'getUsers']);
         Route::delete('/projects/{project}/members',[ProjectController::class,'removeUsers']);
         Route::get('/projects/{project}/surveys',[SurveyController::class,'index']);
         Route::post('/projects/{project}/surveys',[SurveyController::class,'store']);
@@ -67,6 +71,7 @@ Route::prefix('v1')->group(function () {
         Route::delete('/answers/{answer}',[AnswerController::class,'destroy']);
         Route::post('/image',[ImageController::class,'uploadImage']);
         Route::get('/image/{img}',[ImageController::class,'viewImage']);
+        Route::resource('/dpa',DpaController::class);
     });
 });
 

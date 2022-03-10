@@ -61,7 +61,6 @@ class SurveyController extends Controller
                 'date_init',
                 'date_finally',
                 'max_answers',
-                'status',
                 'detail'
             ];
 
@@ -70,11 +69,14 @@ class SurveyController extends Controller
                     $data[$d]=$request->$d;
                 }
             }
+            $data['status']=false;
             $data['cod_project']=$id;
+            $data['max_answers']=isset($data['max_answers'])?$data['max_answers']:-1;
+
             $validate=\Validator::make($data,[
                 'name'=>'required|unique:surveys,name,NULL,id,cod_project,'.$data['cod_project'],
-                'date_finally' => 'date_format:Y-m-d H:i:s|before:start_date',
-                'date_init' => 'date_format:Y-m-d H:i:s|after:today',
+                'date_init' => 'required|date_format:Y-m-d\TH:i:s.\0\0\0\Z|after:today',
+                'date_finally' => 'date_format:Y-m-d\TH:i:s.\0\0\0\Z|after:date_init',
                 'status'    => 'required|boolean',
                 'max_answers'=>'gte:-1',
                 'cod_project'=>'required|exists:projects,cod_project'

@@ -23,6 +23,7 @@ class User extends Authenticatable
         'lastname',
         'email',
         'gender',
+	'active',
         'password',
         'photography',
         'cod_rol',
@@ -36,7 +37,6 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'email_verified_at',
-        'active',
         'remember_token',
         'google_id',
         'created_at',

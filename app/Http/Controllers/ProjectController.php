@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Project;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -109,7 +110,7 @@ class ProjectController extends Controller
                 ->first()){
               $data=Project::select('projects.*','dpas.name as dpa')
                             ->join('dpas','projects.cod_dpa','=','dpas.cod_dpa')->findOrFail($id);
-            $data['users']=$data->users;
+
             return $this->response('false', Response::HTTP_OK, '200 OK', $data);
         }
         return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST');
@@ -223,5 +224,30 @@ class ProjectController extends Controller
             return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST');
         }
 
+    }
+
+    /**
+     * Return members to project id
+     *
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUsers(Request $request, $id){
+        Controller::validatePermissions($request->user(),'PUT','/projects');
+        $project=Project::findOrFail($id);
+        $data=$project->users;
+        $users=User::select('id','name','lastname','email')
+            ->get();
+        foreach ($users as $us){
+            $us['member']=false;
+            foreach ($data as $dt){
+                if($dt->id==$us->id){
+                    $us['member']=true;
+                    unset($dt);
+                }
+            }
+        }
+        return $this->response('false', Response::HTTP_OK, '200 OK',$users);
     }
 }

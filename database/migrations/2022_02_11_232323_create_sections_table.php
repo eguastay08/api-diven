@@ -23,7 +23,6 @@ return new class extends Migration
             $table->foreign('cod_survey')
                 ->references('cod_survey')
                 ->on('surveys')->cascadeOnUpdate()->cascadeOnDelete();
-            $table->unique(['name','cod_survey']);
         });
     }
 
