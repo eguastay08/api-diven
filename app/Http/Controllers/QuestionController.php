@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Option;
 use App\Models\Project;
 use App\Models\Question;
+use App\Models\Section;
 use App\Models\Survey;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -68,7 +69,13 @@ class QuestionController extends Controller
     public function store(Request $request, $id)
     {
         Controller::validatePermissions($request->user(),'POST','/projects/{project}/surveys');
-        $data=Survey::findOrFail($id);
+        $data=Section::join('surveys','surveys.cod_survey','sections.cod_survey')
+            ->where('cod_section','=',$id)
+            ->firstOrFail();
+        if($data->status==true){
+            return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST');
+        }
+
         if(Project::select('projects.*')
                 ->join('project_user','projects.cod_project','project_user.project_cod_project')
                 ->where('project_user.user_id','=',$request->user()->id)
@@ -94,8 +101,6 @@ class QuestionController extends Controller
             $data['cod_section']=$id;
 
             $validate=\Validator::make($data,[
-                'name'=>'required|unique:questions,name,NULL,id,cod_section,'.$data['cod_section'],
-                'question'=>'required',
                 'type'=>'required|in:short_answer,long_text,multiple_choice,checkboxes,dropdown,date,time,datetime,numerical',
                 'required'=>'boolean',
                 'order'=>'required',
@@ -146,7 +151,15 @@ class QuestionController extends Controller
     public function update(Request $request, $id)
     {
         Controller::validatePermissions($request->user(),'POST','/projects/{project}/surveys');
-        $question=Question::findOrFail($id);
+        $question=Question::join('sections','sections.cod_section','questions.cod_section')
+                        ->join('surveys','surveys.cod_survey','sections.cod_survey')
+                        ->where('cod_question','=',$id)
+                        ->firstOrFail();
+
+        if($question->status==true){
+            return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST');
+        }
+
         if(Project::select('projects.*')
                 ->join('project_user','projects.cod_project','project_user.project_cod_project')
                 ->join('surveys','surveys.cod_project','projects.cod_project')
@@ -159,6 +172,7 @@ class QuestionController extends Controller
                 ->where('endpoint','=','/allprojects')
                 ->first()){
             $data=[];
+
             $edit_permission=[
                 'name',
                 'question',
@@ -174,7 +188,6 @@ class QuestionController extends Controller
             }
 
             $validate=\Validator::make($data,[
-                'name'=>'unique:questions,name,NULL,id,cod_section,'.$question->cod_section,
                 'type'=>'in:short_answer,long_text,multiple_choice,checkboxes,dropdown,date,time,datetime,numerical',
                 'required'=>'boolean',
             ]);
@@ -200,7 +213,15 @@ class QuestionController extends Controller
     public function destroy(Request $request,$id)
     {
         Controller::validatePermissions($request->user(),'POST','/projects/{project}/surveys');
-        $question=Question::findOrFail($id);
+        $question=Question::join('sections','sections.cod_section','questions.cod_section')
+            ->join('surveys','surveys.cod_survey','sections.cod_survey')
+            ->where('cod_question','=',$id)
+            ->firstOrFail();
+
+        if($question->status==true){
+            return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST');
+        }
+
         if(Project::select('projects.*')
                 ->join('project_user','projects.cod_project','project_user.project_cod_project')
                 ->join('surveys','surveys.cod_project','projects.cod_project')

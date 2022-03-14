@@ -62,9 +62,9 @@ Route::prefix('v1')->group(function () {
         Route::put('/sections/{section}',[SectionController::class,'update']);
         Route::delete('/sections/{section}',[SectionController::class,'destroy']);
         Route::post('/sections/{section}/questions',[QuestionController::class,'store']);
-        Route::put('/questions/{question}',[QuestionController::class,'update']);
-        Route::delete('/questions/{question}',[QuestionController::class,'destroy']);
-        Route::post('/questions/{question}/options',[OptionController::class,'store']);
+        Route::put('/questions/{cod_question}',[QuestionController::class,'update']);
+        Route::delete('/questions/{cod_question}',[QuestionController::class,'destroy']);
+        Route::post('/questions/{cod_question}/options',[OptionController::class,'store']);
         Route::put('/options/{option}',[OptionController::class,'update']);
         Route::delete('/options/{option}',[OptionController::class,'destroy']);
         Route::post('/answers',[AnswerController::class,'store']);

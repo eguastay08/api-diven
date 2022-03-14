@@ -41,6 +41,9 @@ class SectionController extends Controller
     {
         Controller::validatePermissions($request->user(),'POST','/projects/{project}/surveys');
         $survey=Survey::findOrFail($id);
+        if($survey->status==true){
+            return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST');
+        }
         if(Project::select('projects.*')
                 ->join('project_user','projects.cod_project','project_user.project_cod_project')
                 ->where('project_user.user_id','=',$request->user()->id)
@@ -64,6 +67,7 @@ class SectionController extends Controller
             }
             $data['cod_survey']=$survey->cod_survey;
             $validate=\Validator::make($data,[
+                'name'=>'required',
                 'order'=>'integer|required',
                 'cod_survey'=>'required|exists:surveys,cod_survey'
             ]);
@@ -112,7 +116,12 @@ class SectionController extends Controller
     public function update(Request $request, $id)
     {
         Controller::validatePermissions($request->user(),'POST','/projects/{project}/surveys');
-        $section=Section::findOrFail($id);
+        $section=Section::join('surveys','surveys.cod_survey','sections.cod_survey')
+                        ->where('cod_section','=',$id)
+                        ->firstOrFail();
+        if($section->status==true){
+            return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST');
+        }
         if(Project::select('projects.*')
                 ->join('project_user','projects.cod_project','project_user.project_cod_project')
                 ->join('surveys','surveys.cod_project','projects.cod_project')
@@ -161,7 +170,12 @@ class SectionController extends Controller
     public function destroy(Request $request, $id)
     {
         Controller::validatePermissions($request->user(),'POST','/projects/{project}/surveys');
-        $section=Section::findOrFail($id);
+        $section=Section::join('surveys','surveys.cod_survey','sections.cod_survey')
+            ->where('cod_section','=',$id)
+            ->firstOrFail();
+        if($section->status==true){
+            return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST');
+        }
         if(Project::select('projects.*')
                 ->join('project_user','projects.cod_project','project_user.project_cod_project')
                 ->join('surveys','surveys.cod_project','projects.cod_project')

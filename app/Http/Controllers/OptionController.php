@@ -40,7 +40,14 @@ class OptionController extends Controller
     public function store(Request $request,$id)
     {
         Controller::validatePermissions($request->user(),'POST','/projects/{project}/surveys');
-        $question=Question::findOrFail($id);
+        $question=Question::join('sections','sections.cod_section','questions.cod_section')
+            ->join('surveys','surveys.cod_survey','sections.cod_survey')
+            ->where('cod_question','=',$id)
+            ->firstOrFail();
+
+        if($question->status==true){
+            return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST');
+        }
         if(Project::select('projects.*')
                 ->join('project_user','projects.cod_project','project_user.project_cod_project')
                 ->join('surveys','surveys.cod_project','projects.cod_project')
@@ -111,7 +118,16 @@ class OptionController extends Controller
     public function update(Request $request, $id)
     {
         Controller::validatePermissions($request->user(),'POST','/projects/{project}/surveys');
-        $option=Option::findOrFail($id);
+        $option=Option::join('questions','questions.cod_question','options.cod_question')
+            ->join('sections','sections.cod_section','questions.cod_section')
+            ->join('surveys','surveys.cod_survey','sections.cod_survey')
+            ->where('cod_option','=',$id)
+            ->firstOrFail();
+
+        if($option->status==true){
+            return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST');
+        }
+
         if(Project::select('projects.*')
                 ->join('project_user','projects.cod_project','project_user.project_cod_project')
                 ->join('surveys','surveys.cod_project','projects.cod_project')
@@ -160,7 +176,15 @@ class OptionController extends Controller
     public function destroy(Request $request,$id)
     {
         Controller::validatePermissions($request->user(),'POST','/projects/{project}/surveys');
-        $option=Option::findOrFail($id);
+        $option=Option::join('questions','questions.cod_question','options.cod_question')
+            ->join('sections','sections.cod_section','questions.cod_section')
+            ->join('surveys','surveys.cod_survey','sections.cod_survey')
+            ->where('cod_option','=',$id)
+            ->firstOrFail();
+
+        if($option->status==true){
+            return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST');
+        }
         if(Project::select('projects.*')
                 ->join('project_user','projects.cod_project','project_user.project_cod_project')
                 ->join('surveys','surveys.cod_project','projects.cod_project')

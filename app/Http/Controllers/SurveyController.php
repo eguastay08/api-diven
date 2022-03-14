@@ -165,9 +165,8 @@ class SurveyController extends Controller
                 }
             }
             $validate=\Validator::make($data,[
-                'name'=>'required|unique:surveys,name,NULL,id,cod_project,'.$data['cod_project'],
-                'date_finally' => 'date_format:Y-m-d H:i:s|before:start_date',
-                'status'    => 'required|boolean',
+                'date_finally' => 'date_format:Y-m-d\TH:i:s.\0\0\0\Z',
+                'status'    => 'boolean',
                 'max_answers'=>'gte:-1'
             ]);
 
