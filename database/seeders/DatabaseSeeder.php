@@ -17,7 +17,9 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-
+        $path=base_path().'/database/seeders/dpas.sql';
+        $sql=file_get_contents($path);
+        DB::unprepared($sql);
 
         DB::table('menu')->insert([
             'cod_menu'=>'1',
@@ -337,7 +339,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         DB::table('access_role')->insert([
-            'cod_access'=>21,
+            'cod_access'=>20,
             'cod_rol'=>1
         ]);
 
