@@ -15,7 +15,6 @@ class AccessController extends Controller
      */
     public function index(Request $request)
     {
-        Controller::validatePermissions($request->user(),'GET','/access');
         $data=Access::get();
         return $this->response('false', Response::HTTP_OK, '200 OK', $data);
     }

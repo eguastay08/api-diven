@@ -41,9 +41,9 @@ class DatabaseSeeder extends Seeder
 
         DB::table('menu')->insert([
             'cod_menu'=>'3',
-            'name'=>'Administrar Proyectos',
+            'name'=>'Proyectos',
             'order'=>'3',
-            'icon'=>null,
+            'icon'=>'folder',
             'path'=>'/projects',
             'cod_menu_parent'=>null
         ]);
@@ -92,7 +92,7 @@ class DatabaseSeeder extends Seeder
             'cod_access'=>3,
             'name'=>'update user',
             'endpoint'=>'/users',
-            'method'=>'POST',
+            'method'=>'PUT',
             'cod_menu'=>4
         ]);
 
