@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Response;
 use \Laravel\Socialite\Facades\Socialite;
+use Lcobucci\JWT\Exception;
 
 
 class AuthController extends Controller
@@ -70,7 +71,12 @@ class AuthController extends Controller
 
     public function loginWithGoogle(Request $request){
         try {
-            $user = Socialite::driver('google')->user();
+            $driver = Socialite::driver('google');
+            if(isset($request->accessToken)){
+                $user = $driver->userFromToken($request->accessToken);
+            }else{
+                $user = $driver->user();
+            }
 
             $data_user = User::where('email', '=', $user->getEmail())
                 ->where('active', '=', true)
@@ -93,9 +99,22 @@ class AuthController extends Controller
             $redirect_auth = env('GOOGLE_APP_REDIRECT_WITH_AUTH');
             $log = "The user '" . $data_user->id . "' logged in using google.";
             $this->log('info', $log, 'web', $data_user);
+            if(isset($request->accessToken)) {
+                $data = [
+                    'user' => $data_user,
+                    'access_token' => [
+                        "token" => $tokenResult->accessToken,
+                        "type" => 'Bearer',
+                        'expires_at' => Carbon::parse(
+                            $tokenResult->token->expires_at)
+                            ->toDateTimeString()
+                    ]
+                ];
+                return $this->response('false', Response::HTTP_OK, '200 OK', $data);
+            }
             return redirect("$redirect_auth?access_token=$tokenResult->accessToken");
         }catch(\Exception $e){
-            //return $e->getMessage();
+            return $e->getMessage();
             return response()->json([
                 'message' => 'Not Found'], 404);
         }
