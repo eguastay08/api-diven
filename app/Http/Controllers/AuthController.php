@@ -69,6 +69,13 @@ class AuthController extends Controller
             'Successfully logged out']);
     }
 
+
+    /**
+     * Login Whith Google
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector|string
+     */
     public function loginWithGoogle(Request $request){
         try {
             $driver = Socialite::driver('google');
@@ -121,6 +128,11 @@ class AuthController extends Controller
 
     }
 
+    /**
+     * Google redirect
+     *
+     * @return \Illuminate\Http\RedirectResponse|\Symfony\Component\HttpFoundation\RedirectResponse
+     */
     public function googleRedirect(){
         return Socialite::driver('google')->redirect();
     }
