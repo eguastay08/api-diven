@@ -85,7 +85,7 @@ class AnswerController extends Controller
             case 'date';
                 $data['answer_txt']=$answer;
                 $validate = \Validator::make($data, [
-                    'answer_txt' => 'date_format:Y-m-d|required',
+                    'answer_txt' => 'required',
                 ]);
                 if (!$validate->fails())
                     AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
@@ -95,7 +95,7 @@ class AnswerController extends Controller
             case 'time';
                 $data['answer_txt']=$answer;
                 $validate = \Validator::make($data, [
-                    'answer_txt' => 'date_format:H:i:s|required|',
+                    'answer_txt' => 'required',
                 ]);
                 if (!$validate->fails())
                     AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
@@ -105,7 +105,7 @@ class AnswerController extends Controller
             case 'datetime';
                 $data['answer_txt']=$answer;
                 $validate = \Validator::make($data, [
-                    'answer_txt' => 'date_format:Y-m-d H:i:s|required',
+                    'answer_txt' => 'required',
                 ]);
                 if (!$validate->fails())
                     AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
@@ -212,7 +212,11 @@ class AnswerController extends Controller
 
                 if ($question->type != 'checkboxes') {
                     if (!$this->saveAnswerQuestion($request, $question, $cod_answer, $data['answer'])) {
-                        return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST',);
+                        $error=[
+                            "question"=>$question->question,
+                            "cod_question"=>$question->cod_question
+                        ];
+                        return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST',$error);
                     }
                 }
 
@@ -222,7 +226,7 @@ class AnswerController extends Controller
                         ->delete();
                     foreach ($data['answer'] as $d) {
                         if (!$this->saveAnswerQuestion($request, $question, $cod_answer, $d['value'])) {
-                            $errors[] = 'Opciones incorrectas en seleccion multimple ' . $question->cod_question;
+                            $errors[] = 'Opciones incorrectas en seleccion multiple ' . $question->cod_question;
                         }
                     }
                 } else if ($question->type == 'checkboxes') {
