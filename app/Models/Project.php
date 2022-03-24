@@ -33,6 +33,8 @@ class Project extends Model
     }
 
     public function surveys(){
-        return $this->hasMany(Survey::class,'cod_project');
+        return $this->hasMany(Survey::class,'cod_project')->selectRaw('surveys.*,count(answers.cod_survey) as tot')
+            ->leftjoin('answers','answers.cod_survey','surveys.cod_survey')
+            ->groupBy('answers.cod_survey');
     }
 }

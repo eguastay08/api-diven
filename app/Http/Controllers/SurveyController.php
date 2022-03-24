@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Answer;
 use App\Models\Option;
 use App\Models\Project;
 use App\Models\Question;
@@ -30,6 +31,7 @@ class SurveyController extends Controller
                 ->where('endpoint','=','/allprojects')
                 ->first()){
             $data=Project::findOrFail($id)->surveys;
+
             return $this->response('false', Response::HTTP_OK, '200 OK', $data);
         }
 
@@ -176,7 +178,10 @@ class SurveyController extends Controller
             }
             if($survey->status!=0){
                 unset($data['status']);
+            }else{
+                Answer::where('cod_survey','=',$id)->delete();
             }
+
             $survey->update($data);
             $log="The user '".$request->user()->id."' update a survey $id";
             $this->log('info',$log,'web',$request->user());

@@ -18,7 +18,7 @@ class Section extends Model
         'cod_survey'
     ];
 
-    public function questions(){
+    public function question(){
         return $this->belongsTo(Project::class,'cod_section');
     }
 }

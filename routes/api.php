@@ -43,7 +43,6 @@ Route::prefix('v1')->group(function () {
         Route::resource('/users',UserController::class);
         Route::get('/me', [UserController::class, 'me']);
         Route::get('/me/navigation', [MenuController::class, 'navigation']);
-        Route::get('/logout', [AuthController::class, 'logout']);
         Route::resource('/roles',RoleController::class);
         Route::post('/roles/{role}/access', [RoleController::class, 'setAccess']);
         Route::delete('/roles/{role}/access', [RoleController::class, 'removeAccess']);
@@ -59,6 +58,8 @@ Route::prefix('v1')->group(function () {
         Route::get('/surveys/{survey}',[SurveyController::class,'show']);
         Route::get('/surveys/{survey}/questions',[QuestionController::class,'index']);
         Route::post('/surveys/{survey}/sections',[SectionController::class,'store']);
+        Route::post('/surveys/{survey}/answers',[AnswerController::class,'store']);
+        Route::get('/surveys/{survey}/responses',[AnswerController::class,'responses']);
         Route::put('/sections/{section}',[SectionController::class,'update']);
         Route::delete('/sections/{section}',[SectionController::class,'destroy']);
         Route::post('/sections/{section}/questions',[QuestionController::class,'store']);
@@ -67,7 +68,6 @@ Route::prefix('v1')->group(function () {
         Route::post('/questions/{cod_question}/options',[OptionController::class,'store']);
         Route::put('/options/{option}',[OptionController::class,'update']);
         Route::delete('/options/{option}',[OptionController::class,'destroy']);
-        Route::post('/answers',[AnswerController::class,'store']);
         Route::delete('/answers/{answer}',[AnswerController::class,'destroy']);
         Route::post('/image',[ImageController::class,'uploadImage']);
         Route::get('/image/{img}',[ImageController::class,'viewImage']);

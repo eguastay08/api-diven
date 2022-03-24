@@ -14,27 +14,19 @@ return new class extends Migration
     public function up()
     {
         Schema::create('answers', function (Blueprint $table) {
-            $table->id()->comment('Identifier answer');
-            $table->bigInteger('cod_answer')->comment('Response Group Identifier');
-            $table->unsignedBigInteger('cod_question')->comment('Identifier question');
-            $table->unsignedBigInteger('cod_option')->nullable()->comment('Identifier option');
-            $table->text('answer_txt')->nullable()->comment('Response in case the type is text');
+            $table->id('cod_answer')->comment('Identifier answer');
             $table->bigInteger('latitude')->comment('latitude where the response was recorded');
-            $table->bigInteger('length')->comment('length where the response was recorded');
+            $table->bigInteger('longitude')->comment('length where the response was recorded');
             $table->unsignedBigInteger('id_user')->comment('identifier user');
+            $table->unsignedBigInteger('cod_survey')->comment('Identifier survey');
             $table->timestamps();
             $table->foreign('id_user')
                 ->references('id')
                 ->on('users')->cascadeOnUpdate();
 
-            $table->foreign('cod_question')
-                ->references('cod_question')
-                ->on('questions')->cascadeOnUpdate()->cascadeOnDelete();
-
-            $table->foreign(['cod_question','cod_option'])
-                ->references(['cod_question','cod_option'])
-                ->on('options')->cascadeOnUpdate();
-            $table->unique(['cod_question','cod_option','cod_answer']);
+            $table->foreign('cod_survey')
+                ->references('cod_survey')
+                ->on('surveys')->cascadeOnUpdate()->cascadeOnDelete();
         });
     }
 

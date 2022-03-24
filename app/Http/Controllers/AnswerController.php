@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Answer;
+use App\Models\AnswersOptionsQuestions;
 use App\Models\Project;
 use App\Models\Question;
 use App\Models\Survey;
@@ -33,160 +34,259 @@ class AnswerController extends Controller
     }
 
     /**
+     * Save answers responses in storage
+     *
+     * @param Request $request
+     * @param Question $question
+     * @param $cod_answer
+     * @param $answer
+     * @return bool
+     */
+    public function saveAnswerQuestion(Request $request, Question $question, $cod_answer,$answer){
+        $data=[
+            'cod_question'=>$question->cod_question,
+            'cod_answer'=>$cod_answer
+        ];
+
+        switch ($question['type']) {
+            case 'short_answer';
+                $data['answer_txt']=$answer;
+                $validate = \Validator::make($data, [
+                    'answer_txt' => 'max:255',
+                ]);
+                if (!$validate->fails())
+                    AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
+                        ->where('cod_answer', '=', $cod_answer)
+                        ->delete();
+                break;
+            case 'long_text';
+                $data['answer_txt']=$answer;
+                AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
+                    ->where('cod_answer', '=', $cod_answer)
+                    ->delete();
+                break;
+            case 'multiple_choice';
+            case 'dropdown';
+                $data['cod_option']=$answer;
+                $validate = \Validator::make($data, [
+                    'cod_option' => 'exists:options,cod_option,cod_question,' . $question->cod_question . '|required|unique:answers_options_questions,cod_option,null,id,cod_question,' . $question->cod_question . ',cod_answer,' . $cod_answer,
+                ]);
+                if (!$validate->fails())
+                    AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
+                        ->where('cod_answer', '=', $cod_answer)
+                        ->delete();
+                break;
+            case  'checkboxes';
+                $data['cod_option']=$answer;
+                $validate = \Validator::make($data, [
+                    'cod_option' => 'exists:options,cod_option,cod_question,' . $question->cod_question . '|required|unique:answers_options_questions,cod_option,null,id,cod_question,' . $question->cod_question . ',cod_answer,' . $cod_answer,
+                ]);
+                break;
+            case 'date';
+                $data['answer_txt']=$answer;
+                $validate = \Validator::make($data, [
+                    'answer_txt' => 'date_format:Y-m-d|required',
+                ]);
+                if (!$validate->fails())
+                    AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
+                        ->where('cod_answer', '=', $cod_answer)
+                        ->delete();
+                break;
+            case 'time';
+                $data['answer_txt']=$answer;
+                $validate = \Validator::make($data, [
+                    'answer_txt' => 'date_format:H:i:s|required|',
+                ]);
+                if (!$validate->fails())
+                    AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
+                        ->where('cod_answer', '=', $cod_answer)
+                        ->delete();
+                break;
+            case 'datetime';
+                $data['answer_txt']=$answer;
+                $validate = \Validator::make($data, [
+                    'answer_txt' => 'date_format:Y-m-d H:i:s|required',
+                ]);
+                if (!$validate->fails())
+                    AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
+                        ->where('cod_answer', '=', $cod_answer)
+                        ->delete();
+                break;
+            case 'numerical';
+                $data['answer_txt']=$answer;
+                $validate = \Validator::make($data, [
+                    'answer_txt' => 'numeric|required',
+                ]);
+                if (!$validate->fails())
+                    AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
+                        ->where('cod_answer', '=', $cod_answer)
+                        ->delete();
+                break;
+        }
+        if (isset($validate)&&$validate->fails()) {
+            return false;
+        }
+
+        $answer = AnswersOptionsQuestions::create($data);
+        if($answer){
+            $log = "The user '" . $request->user()->id . "' create new answer $cod_answer, to question $question->cod_question";
+            $this->log('info', $log, 'web', $request->user());
+        }
+        return true;
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request,$id)
     {
         Controller::validatePermissions($request->user(),'POST','/answers');
-        $data=[];
-        $edit_permission=[
-            'cod_question',
-            'cod_option',
-            'answer_txt',
-            'latitude',
-            'length',
-            'cod_answer'
-        ];
-        foreach ($edit_permission as $d){
-            if(isset($request->$d)){
-                $data[$d]=$request->$d;
-            }
-        }
-
-        $validate=\Validator::make($data,[
-            'cod_question'=>'required|exists:questions,cod_question',
-            'latitude'=>'required',
-            'length'=>'required',
-            'cod_answer'=>'exists:answers,cod_answer',
-        ]);
-
-        if ($validate->fails())
-        {
-            return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST', $validate->errors());
-        }
-
-          $question=Question::find($data['cod_question'])
-             ->join('sections','sections.cod_section','=','questions.cod_section')
-             ->join('surveys','surveys.cod_survey','=','sections.cod_survey')
-             ->first();
+        $survey=Survey::findOrFail($id);
 
         if(Project::select('projects.*')
                 ->join('project_user','projects.cod_project','project_user.project_cod_project')
-                ->join('surveys','surveys.cod_project','projects.cod_project')
-                ->join('sections','sections.cod_survey','surveys.cod_survey')
-                ->join('questions','questions.cod_section','sections.cod_section')
                 ->where('project_user.user_id','=',$request->user()->id)
-                ->where('questions.cod_section','=',$question->cod_section)
+                ->where('project_user.project_cod_project','=',$survey->cod_project)
                 ->first()||$request->user()->role->access
                 ->where('method','=','GET')
                 ->where('endpoint','=','/allprojects')
                 ->first()) {
-
-            if(!isset($data['cod_answer'])){
-                if($this->countAnswers($question->cod_survey)<$question->max_answers || $question->max_answers==-1){
-                    $cod_answer=$this->generateCodeAnswer();
-                }else{
-                    return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST');
-                }
-            }else{
-                $cod_answer=$data['cod_answer'];
-            }
-
-            switch ($question['type']) {
-                case 'short_answer';
-                    $validate = \Validator::make($data, [
-                        'answer_txt' => 'required|max:255',
-                    ]);
-                    if (!$validate->fails())
-                        Answer::where('cod_question', '=', $question->cod_question)
-                            ->where('cod_answer', '=', $cod_answer)
-                            ->delete();
-                    unset($data['cod_option']);
-                    break;
-                case 'long_text';
-                    $validate = \Validator::make($data, [
-                        'answer_txt' => 'required',
-                    ]);
-                    if (!$validate->fails())
-                        Answer::where('cod_question', '=', $question->cod_question)
-                            ->where('cod_answer', '=', $cod_answer)
-                            ->delete();
-                    unset($data['cod_option']);
-                    break;
-                case 'multiple_choice';
-                case 'dropdown';
-                    $validate = \Validator::make($data, [
-                        'cod_option' => 'exists:options,cod_option,cod_question,' . $question->cod_question . '|required|unique:answers,cod_option,cod_question,cod_answer',
-                    ]);
-                    if (!$validate->fails())
-                        Answer::where('cod_question', '=', $question->cod_question)
-                            ->where('cod_answer', '=', $cod_answer)
-                            ->delete();
-                    unset($data['answer_txt']);
-                    break;
-                case  'checkboxes';
-                    $validate = \Validator::make($data, [
-                        'cod_option' => 'exists:options,cod_option,cod_question,' . $question->cod_question . '|required|unique:answers,cod_option,cod_question,cod_answer',
-                    ]);
-                    unset($data['answer_txt']);
-                    break;
-                case 'date';
-                    $validate = \Validator::make($data, [
-                        'answer_txt' => 'date_format:Y-m-d|required',
-                    ]);
-                    if (!$validate->fails())
-                        Answer::where('cod_question', '=', $question->cod_question)
-                            ->where('cod_answer', '=', $cod_answer)
-                            ->delete();
-                    unset($data['cod_option']);
-                    break;
-                case 'time';
-                    $validate = \Validator::make($data, [
-                        'answer_txt' => 'date_format:H:i:s|required|',
-                    ]);
-                    if (!$validate->fails())
-                        Answer::where('cod_question', '=', $question->cod_question)
-                            ->where('cod_answer', '=', $cod_answer)
-                            ->delete();
-                    unset($data['cod_option']);
-                    break;
-                case 'datetime';
-                    $validate = \Validator::make($data, [
-                        'answer_txt' => 'date_format:Y-m-d H:i:s|required',
-                    ]);
-                    if (!$validate->fails())
-                        Answer::where('cod_question', '=', $question->cod_question)
-                            ->where('cod_answer', '=', $cod_answer)
-                            ->delete();
-                    unset($data['cod_option']);
-                    break;
-                case 'numerical';
-                    $validate = \Validator::make($data, [
-                        'answer_txt' => 'numeric|required',
-                    ]);
-                    if (!$validate->fails())
-                        Answer::where('cod_question', '=', $question->cod_question)
-                            ->where('cod_answer', '=', $cod_answer)
-                            ->delete();
-                    unset($data['cod_option']);
-                    break;
-            }
+            DB::beginTransaction();
+            $cod_answer = null;
+            $errors = [];
+            $validate = \Validator::make($request->all(), [
+                'location.latitude' => 'required',
+                'location.longitude' => 'required',
+            ]);
             if ($validate->fails()) {
+                DB::rollback();
                 return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST', $validate->errors());
             }
-            $data['id_user'] = $request->user()->id;
-            $data['cod_answer'] = $cod_answer;
-            $answer = Answer::create($data);
-            $log = "The user '" . $request->user()->id . "' create new answer $cod_answer, question $question->cod_question";
-            $this->log('info', $log, 'web', $request->user());
-            return $this->response(false, Response::HTTP_CREATED, '201 Created', $answer);
+
+            $questions= Question::select('questions.*','surveys.cod_survey','surveys.max_answers')
+                ->join('sections','sections.cod_section','questions.cod_section')
+                ->join('surveys','surveys.cod_survey','sections.cod_survey')
+                ->where('surveys.cod_survey','=',$id)
+                ->get();
+
+            foreach ($questions as $ans){
+                $data = [];
+                $data['cod_question']=$ans['cod_question'];
+                foreach ($request->answers as $res) {
+                    if($ans['cod_question']==$res['cod_question']){
+                        $data['answer']=$res['answer'];
+                    }
+                }
+
+                if (!isset($data['answer'])) {
+                    $data['answer'] = null;
+                }
+
+                $question = $ans;
+
+                if ($cod_answer == null) {
+                    if ($this->countAnswers($question->cod_survey) < $question->max_answers || $question->max_answers == -1) {
+                        $answ = [
+                            'latitude' => $request->location['latitude'],
+                            'longitude' => $request->location['longitude'],
+                            'id_user' => $request->user()->id,
+                            'cod_survey' => $question['cod_survey']
+                        ];
+                        $ans = Answer::create($answ);
+                        $cod_answer = $ans->cod_answer;
+                    } else {
+                        $errors[] = 'Número máximo de respuestas alcanzado';
+                        DB::rollback();
+                        return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST', $errors);
+                    }
+                }
+
+                if ($question->required) {
+                    if ($data['answer'] == null) {
+                        $errors[] = 'Cuestionario incompleto';
+                    }
+                }
+
+                if ($question->type != 'checkboxes') {
+                    if (!$this->saveAnswerQuestion($request, $question, $cod_answer, $data['answer'])) {
+                        return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST',);
+                    }
+                }
+
+                if ($question->type == 'checkboxes' && is_array($data['answer'])) {
+                    AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
+                        ->where('cod_answer', '=', $cod_answer)
+                        ->delete();
+                    foreach ($data['answer'] as $d) {
+                        if (!$this->saveAnswerQuestion($request, $question, $cod_answer, $d['value'])) {
+                            $errors[] = 'Opciones incorrectas en seleccion multimple ' . $question->cod_question;
+                        }
+                    }
+                } else if ($question->type == 'checkboxes') {
+                    $errors[] = 'Pregunta de seleccion multiple con errores';
+                }
+
+                if ($errors != []) {
+                    DB::rollback();
+                    return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST', $errors);
+                }
+            }
+
+            DB::commit();
+            return $this->response(false, Response::HTTP_CREATED, '201 Created');
         }
         return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST');
     }
 
+    public function responses(Request $request, $id){
+        Controller::validatePermissions($request->user(),'POST','/projects/{project}/surveys');
+        $survey=Survey::findOrFail($id);
+
+        if(Project::select('projects.*')
+                ->join('project_user','projects.cod_project','project_user.project_cod_project')
+                ->where('project_user.user_id','=',$request->user()->id)
+                ->where('project_user.project_cod_project','=',$survey->cod_project)
+                ->first()||$request->user()->role->access
+                ->where('method','=','GET')
+                ->where('endpoint','=','/allprojects')
+                ->first()) {
+                $answers=Answer::where('cod_survey','=',$survey->cod_survey)
+                    ->get();
+                $json=[];
+                foreach ($answers as $ans) {
+                    $data=[];
+                    $responses = AnswersOptionsQuestions::select('question', 'option', 'answer_txt', 'type','questions.cod_question','answers_options_questions.updated_at')
+                        ->join('questions', 'answers_options_questions.cod_question', 'questions.cod_question')
+                        ->leftjoin('options', 'answers_options_questions.cod_option', 'options.cod_option')
+                        ->where('cod_answer', '=', $ans->cod_answer)
+                        ->get();
+                    $data['cod_answer'] = $ans->cod_answer;
+                    $data['latitude'] = $ans->latitude;
+                    $data['longitude'] = $ans->longitude;
+                    $data['id_user'] = $ans->id_user;
+                    $data['cod_survey'] = $ans->cod_survey;
+                    $data['date']=$ans->updated_at;
+
+                    foreach ($responses as $r) {
+                        if($r->type!='checkboxes'){
+                            $data[$r->question]= $r->option ?? $r->answer_txt;
+                        }else{
+                            if(isset($data[$r->question])){
+                                $data[$r->question].=",$r->option";
+                            }else{
+                                $data[$r->question]=$r->option;
+                            }
+
+                        }
+                    }
+                    $json[]= $data;
+                }
+                return $this->response('false', Response::HTTP_OK, '200 OK',$json);
+        }
+    }
     /**
      * Display the specified resource.
      *
@@ -209,7 +309,7 @@ class AnswerController extends Controller
     {
         Controller::validatePermissions($request->user(),'DELETE','/answers');
         $question=Answer::join('questions','answers.cod_question','=','questions.cod_question')
-        ->where('cod_answer','=',$id)->firstOrFail();
+            ->where('cod_answer','=',$id)->firstOrFail();
 
         if(Project::select('projects.*')
                 ->join('project_user','projects.cod_project','project_user.project_cod_project')
@@ -228,17 +328,6 @@ class AnswerController extends Controller
         return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST');
     }
 
-    /**
-     * generate a new code answer
-     *
-     * @return int|mixed
-     */
-    public function generateCodeAnswer(){
-       $cod_answer=Answer::select('cod_answer')
-        ->orderBy('answers.cod_answer', 'DESC')
-           ->first();
-       return isset($cod_answer)?$cod_answer['cod_answer']+1:1;
-    }
 
     /**
      * count survey responses, refactoring
@@ -249,9 +338,7 @@ class AnswerController extends Controller
      */
     public function countAnswers($cod_survey){
         return count(Answer::select('cod_answer')
-            ->join('questions as q','answers.cod_question','=','q.cod_question')
-            ->join('sections as s','q.cod_section','=','s.cod_section')
-            ->join('surveys as s2','s2.cod_survey','=','s.cod_survey')
+            ->join('surveys as s2','s2.cod_survey','=','answers.cod_survey')
             ->where('s2.cod_survey','=',$cod_survey)
             ->groupBy('cod_answer')->get());
     }

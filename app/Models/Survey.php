@@ -32,11 +32,30 @@ class Survey extends Model
         'date_finally' => 'datetime',
     ];
 
+    /**
+     * Returns the project to which the survey belongs
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
     public function project(){
         return $this->belongsTo(Project::class,'cod_project');
     }
 
+    /**
+     *Returns the sections of a survey
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function sections(){
         return $this->hasMany(Section::class,'cod_survey')->orderBy('order');
+    }
+
+    /**
+     * Returns survey answers
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function answers(){
+        return $this->hasMany(Answer::class,'cod_survey');
     }
 }
