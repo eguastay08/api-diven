@@ -68,26 +68,30 @@ class AnswerController extends Controller
             case 'multiple_choice';
             case 'dropdown';
                 $data['cod_option']=$answer;
-                $validate = \Validator::make($data, [
-                    'cod_option' => 'exists:options,cod_option,cod_question,' . $question->cod_question . '|required|unique:answers_options_questions,cod_option,null,id,cod_question,' . $question->cod_question . ',cod_answer,' . $cod_answer,
-                ]);
-                if (!$validate->fails())
+                if($data['cod_option']!=null){
+                    $validate = \Validator::make($data, [
+                        'cod_option' => 'exists:options,cod_option,cod_question,' . $question->cod_question . '|unique:answers_options_questions,cod_option,null,id,cod_question,' . $question->cod_question . ',cod_answer,' . $cod_answer,
+                    ]);
+                }
                     AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
                         ->where('cod_answer', '=', $cod_answer)
                         ->delete();
                 break;
             case  'checkboxes';
                 $data['cod_option']=$answer;
-                $validate = \Validator::make($data, [
-                    'cod_option' => 'exists:options,cod_option,cod_question,' . $question->cod_question . '|required|unique:answers_options_questions,cod_option,null,id,cod_question,' . $question->cod_question . ',cod_answer,' . $cod_answer,
-                ]);
+                if($data['cod_option']!=null) {
+                    $validate = \Validator::make($data, [
+                        'cod_option' => 'exists:options,cod_option,cod_question,' . $question->cod_question . '|unique:answers_options_questions,cod_option,null,id,cod_question,' . $question->cod_question . ',cod_answer,' . $cod_answer,
+                    ]);
+                }
                 break;
             case 'date';
                 $data['answer_txt']=$answer;
-                $validate = \Validator::make($data, [
-                    'answer_txt' => 'required',
-                ]);
-                if (!$validate->fails())
+                if($data['answer_txt']!=null) {
+                    $validate = \Validator::make($data, [
+                        'answer_txt' => 'date_format:Y-m-d',
+                    ]);
+                }
                     AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
                         ->where('cod_answer', '=', $cod_answer)
                         ->delete();
@@ -95,7 +99,7 @@ class AnswerController extends Controller
             case 'time';
                 $data['answer_txt']=$answer;
                 $validate = \Validator::make($data, [
-                    'answer_txt' => 'required',
+                    'answer_txt' => 'date_format:H:i',
                 ]);
                 if (!$validate->fails())
                     AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
@@ -115,7 +119,7 @@ class AnswerController extends Controller
             case 'numerical';
                 $data['answer_txt']=$answer;
                 $validate = \Validator::make($data, [
-                    'answer_txt' => 'numeric|required',
+                    'answer_txt' => 'numeric',
                 ]);
                 if (!$validate->fails())
                     AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
@@ -123,6 +127,7 @@ class AnswerController extends Controller
                         ->delete();
                 break;
         }
+
         if (isset($validate)&&$validate->fails()) {
             return false;
         }
@@ -229,8 +234,6 @@ class AnswerController extends Controller
                             $errors[] = 'Opciones incorrectas en seleccion multiple ' . $question->cod_question;
                         }
                     }
-                } else if ($question->type == 'checkboxes') {
-                    $errors[] = 'Pregunta de seleccion multiple con errores';
                 }
 
                 if ($errors != []) {
@@ -272,7 +275,7 @@ class AnswerController extends Controller
                     $data['longitude'] = $ans->longitude;
                     $data['id_user'] = $ans->id_user;
                     $data['cod_survey'] = $ans->cod_survey;
-                    $data['date']=$ans->updated_at;
+                    $data['date']=date_format($ans->updated_at,"Y/m/d H:i:s");
 
                     foreach ($responses as $r) {
                         if($r->type!='checkboxes'){
