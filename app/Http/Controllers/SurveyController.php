@@ -6,9 +6,12 @@ use App\Models\Answer;
 use App\Models\Option;
 use App\Models\Project;
 use App\Models\Question;
+use App\Models\Section;
 use App\Models\Survey;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class SurveyController extends Controller
 {
@@ -211,6 +214,84 @@ class SurveyController extends Controller
                 ->first()){
             $survey->delete();
             return $this->response('false', Response::HTTP_OK, '200 OK');
+        }
+        return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST');
+    }
+
+    public function duplicate(Request $request,$id){
+        Controller::validatePermissions($request->user(),'POST','/projects/{project}/surveys');
+
+        $data=Survey::findOrFail($id);
+        if(Project::select('projects.*')
+                ->join('project_user','projects.cod_project','project_user.project_cod_project')
+                ->where('project_user.user_id','=',$request->user()->id)
+                ->where('project_user.project_cod_project','=',$data->cod_project)
+                ->first()||$request->user()->role->access
+                ->where('method','=','GET')
+                ->where('endpoint','=','/allprojects')
+                ->first()){
+            $data['sections']=$data->sections;
+            foreach ($data['sections'] as $sec){
+                $sec['questions']=Question::where('cod_section','=',$sec->cod_section)
+                    ->orderby('order')
+                    ->get();
+                foreach ($sec['questions'] as $que){
+                    $que['options']=Option::where('cod_question','=',$que->cod_question)->get();
+                }
+            }
+            DB::beginTransaction();
+            try {
+                $survey = [
+                    'name' => "$data->name " . Str::random(1),
+                    'date_init' => $data->date_init,
+                    'date_finally' => $data->date_finally,
+                    'max_answers' => $data->max_answers,
+                    'detail' => $data->detail,
+                    'status' => 0,
+                    'cod_project' => $data->cod_project,
+                ];
+
+                $new_survey = Survey::create($survey);
+
+                foreach ($data->sections as $sec) {
+                    $section = [
+                        'name' => $sec->name,
+                        'detail' => $sec->detail,
+                        'order' => $sec,
+                        'cod_survey' => $new_survey->cod_survey
+                    ];
+
+                    $new_section = Section::create($section);
+
+                    foreach ($sec->questions as $ques) {
+                        $question = [
+                            'name' => $ques->name,
+                            'question' => $ques->question,
+                            'required' => $ques->required,
+                            'type' => $ques->type,
+                            'image' => $ques->image,
+                            'order' => $ques->order,
+                            'cod_section' => $new_section->cod_section
+                        ];
+
+                        $new_question = Question::create($question);
+
+                        foreach ($ques->options as $opt) {
+                            $option = [
+                                'option' => $opt->option,
+                                'image' => $opt->image,
+                                'cod_question' => $new_question->cod_question
+                            ];
+                            Option::create($option);
+                        }
+                    }
+                }
+                DB::commit();
+                return $this->response('false', Response::HTTP_OK, '200 OK');
+            }catch (\Exception $e){
+                DB::rollback();
+                $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST');
+            }
         }
         return $this->response('true', Response::HTTP_BAD_REQUEST, '400 BAD REQUEST');
     }

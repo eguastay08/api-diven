@@ -59,6 +59,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/surveys/{survey}/questions',[QuestionController::class,'index']);
         Route::post('/surveys/{survey}/sections',[SectionController::class,'store']);
         Route::post('/surveys/{survey}/answers',[AnswerController::class,'store']);
+        Route::get('/surveys/{survey}/duplicate',[SurveyController::class,'duplicate']);
         Route::get('/surveys/{survey}/responses',[AnswerController::class,'responses']);
         Route::put('/sections/{section}',[SectionController::class,'update']);
         Route::delete('/sections/{section}',[SectionController::class,'destroy']);
