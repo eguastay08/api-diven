@@ -118,11 +118,12 @@ class AnswerController extends Controller
                         ->delete();
                 break;
             case 'numerical';
-                $data['answer_txt']=$answer;
-                $validate = \Validator::make($data, [
-                    'answer_txt' => 'numeric',
-                ]);
-                if (!$validate->fails())
+                if($data['answer_txt']!=null) {
+                    $data['answer_txt'] = $answer;
+                    $validate = \Validator::make($data, [
+                        'answer_txt' => 'numeric',
+                    ]);
+                }
                     AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
                         ->where('cod_answer', '=', $cod_answer)
                         ->delete();
