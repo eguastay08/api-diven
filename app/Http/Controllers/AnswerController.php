@@ -118,8 +118,8 @@ class AnswerController extends Controller
                         ->delete();
                 break;
             case 'numerical';
+                $data['answer_txt'] = $answer;
                 if($data['answer_txt']!=null) {
-                    $data['answer_txt'] = $answer;
                     $validate = \Validator::make($data, [
                         'answer_txt' => 'numeric',
                     ]);
