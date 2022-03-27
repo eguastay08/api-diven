@@ -62,9 +62,15 @@ class DatabaseSeeder extends Seeder
             "detail"=>null
         ]);
 
+        DB::table('roles')->insert([
+            "cod_rol"=>2,
+            "name"=>'Estudiante',
+            "detail"=>null
+        ]);
+
         DB::table('access')->insert([
             'cod_access'=>1,
-            'name'=>'Get all users',
+            'name'=>'Obtener usuarios',
             'endpoint'=>'/users',
             'method'=>'GET',
             'cod_menu'=>4
@@ -77,7 +83,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>2,
-            'name'=>'Register new user',
+            'name'=>'Registrar nuevo usuario',
             'endpoint'=>'/users',
             'method'=>'POST',
             'cod_menu'=>4
@@ -90,7 +96,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>3,
-            'name'=>'update user',
+            'name'=>'Actualizar usuario',
             'endpoint'=>'/users',
             'method'=>'PUT',
             'cod_menu'=>4
@@ -103,7 +109,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>4,
-            'name'=>'delete user',
+            'name'=>'Eliminar Usuario',
             'endpoint'=>'/users',
             'method'=>'DELETE',
             'cod_menu'=>4
@@ -116,7 +122,7 @@ class DatabaseSeeder extends Seeder
         /**ACCESS ROLES**/
         DB::table('access')->insert([
             'cod_access'=>5,
-            'name'=>'Get All Roles',
+            'name'=>'Obtener roles',
             'endpoint'=>'/roles',
             'method'=>'GET',
             'cod_menu'=>2
@@ -129,7 +135,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>6,
-            'name'=>'Insert New Role',
+            'name'=>'Registrar nuevo rol',
             'endpoint'=>'/roles',
             'method'=>'POST',
             'cod_menu'=>2
@@ -145,7 +151,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>7,
-            'name'=>'Update Role',
+            'name'=>'Actualizar rol',
             'endpoint'=>'/roles',
             'method'=>'PUT',
             'cod_menu'=>2
@@ -161,7 +167,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>8,
-            'name'=>'DELETE Role',
+            'name'=>'Eliminar rol',
             'endpoint'=>'/roles',
             'method'=>'DELETE',
             'cod_menu'=>2
@@ -176,7 +182,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>9,
-            'name'=>'GET ALL ACCESS',
+            'name'=>'Obteneter todos los accesos del sistema',
             'endpoint'=>'/access',
             'method'=>'GET',
             'cod_menu'=>2
@@ -193,7 +199,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>10,
-            'name'=>'GET MY PROJECTS',
+            'name'=>'Obtener mis proyectos',
             'endpoint'=>'/projects',
             'method'=>'GET',
             'cod_menu'=>3
@@ -208,7 +214,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>11,
-            'name'=>'GET ALL PROJECTS',
+            'name'=>'Gestionar todos los proyectos',
             'endpoint'=>'/allprojects',
             'method'=>'GET',
             'cod_menu'=>3
@@ -221,7 +227,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>12,
-            'name'=>'CREATE PROJECT',
+            'name'=>'Registrar proyectos',
             'endpoint'=>'/projects',
             'method'=>'POST',
             'cod_menu'=>3
@@ -236,7 +242,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>13,
-            'name'=>'UPDATE PROJECT',
+            'name'=>'Actualizar proyecto',
             'endpoint'=>'/projects',
             'method'=>'PUT',
             'cod_menu'=>3
@@ -251,7 +257,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>14,
-            'name'=>'DELETE PROJECT',
+            'name'=>'Eliminar Proectos',
             'endpoint'=>'/projects',
             'method'=>'DELETE',
             'cod_menu'=>3
@@ -266,7 +272,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>15,
-            'name'=>'ADD NEW MEMBERS A PROJECT',
+            'name'=>'Agregar nuevos miembros al proyecto',
             'endpoint'=>'/projects/{project}/members',
             'method'=>'POST',
             'cod_menu'=>3
@@ -280,7 +286,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>16,
-            'name'=>'REMOVE MEMBERS A PROJECT',
+            'name'=>'Eliminar miembros del proyecto ',
             'endpoint'=>'/projects/{project}/members',
             'method'=>'DELETE',
             'cod_menu'=>3
@@ -293,7 +299,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>17,
-            'name'=>'GET SURVEYS FROM A PROJECT',
+            'name'=>'Obtener las encuestas',
             'endpoint'=>'/projects/{project}/surveys',
             'method'=>'GET',
             'cod_menu'=>3
@@ -306,7 +312,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>18,
-            'name'=>'CREATE SURVEYS FROM A PROJECT',
+            'name'=>'Agregar encuestas',
             'endpoint'=>'/projects/{project}/surveys',
             'method'=>'POST',
             'cod_menu'=>3
@@ -319,7 +325,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>19,
-            'name'=>'UPDATE SURVEYS',
+            'name'=>'Actualizar encuestas',
             'endpoint'=>'/surveys',
             'method'=>'PUT',
             'cod_menu'=>3
@@ -332,7 +338,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>20,
-            'name'=>'DELETE SURVEYS',
+            'name'=>'Eliminar encuestas',
             'endpoint'=>'/surveys',
             'method'=>'DELETE',
             'cod_menu'=>3
@@ -345,7 +351,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>22,
-            'name'=>'CREATE ANSWERS',
+            'name'=>'Agregar respuestas',
             'endpoint'=>'/answers',
             'method'=>'POST',
             'cod_menu'=>3
@@ -358,7 +364,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>23,
-            'name'=>'DELETE ANSWERS',
+            'name'=>'Eliminar respuestas',
             'endpoint'=>'/answers',
             'method'=>'DELETE',
             'cod_menu'=>3
