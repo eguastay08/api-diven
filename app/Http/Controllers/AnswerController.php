@@ -98,10 +98,11 @@ class AnswerController extends Controller
                 break;
             case 'time';
                 $data['answer_txt']=$answer;
-                $validate = \Validator::make($data, [
-                    'answer_txt' => 'date_format:H:i',
-                ]);
-                if (!$validate->fails())
+                if($data['answer_txt']!=null) {
+                    $validate = \Validator::make($data, [
+                        'answer_txt' => 'date_format:H:i',
+                    ]);
+                }
                     AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
                         ->where('cod_answer', '=', $cod_answer)
                         ->delete();
