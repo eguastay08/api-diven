@@ -62,7 +62,7 @@ class UserController extends Controller
             'name'    => 'required',
             'lastname'    => 'required',
             'email'    => 'email|unique:users|required',
-            'gender'=>'in:male,female,other|required',
+            'gender'=>'in:femele,male,other|required',
             'password'=>'required',
             'cod_rol'=>'exists:roles,cod_rol|required'
         ]);
@@ -164,7 +164,7 @@ class UserController extends Controller
             'name'    => 'required',
             'lastname'    => 'required',
             'email'    => 'email',
-            'gender'=>'in:male,female,other',
+            'gender'=>'in:male,femele,other',
             'cod_rol'=>'exists:roles,cod_rol',
             'active'=>'boolean'
         ]);

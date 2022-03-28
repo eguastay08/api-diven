@@ -109,7 +109,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>4,
-            'name'=>'Eliminar Usuario',
+            'name'=>'Eliminar usuario',
             'endpoint'=>'/users',
             'method'=>'DELETE',
             'cod_menu'=>4
@@ -182,7 +182,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>9,
-            'name'=>'Obteneter todos los accesos del sistema',
+            'name'=>'Obtener los accesos del sistema',
             'endpoint'=>'/access',
             'method'=>'GET',
             'cod_menu'=>2
@@ -257,7 +257,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('access')->insert([
             'cod_access'=>14,
-            'name'=>'Eliminar Proectos',
+            'name'=>'Eliminar Proyectos',
             'endpoint'=>'/projects',
             'method'=>'DELETE',
             'cod_menu'=>3

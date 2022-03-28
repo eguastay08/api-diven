@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('answers', function (Blueprint $table) {
             $table->id('cod_answer')->comment('Identifier answer');
-            $table->bigInteger('latitude')->comment('latitude where the response was recorded');
-            $table->bigInteger('longitude')->comment('length where the response was recorded');
+            $table->text('latitude')->comment('latitude where the response was recorded');
+            $table->text('longitude')->comment('length where the response was recorded');
             $table->unsignedBigInteger('id_user')->comment('identifier user');
             $table->unsignedBigInteger('cod_survey')->comment('Identifier survey');
             $table->timestamps();
