@@ -1,64 +1,48 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+## API - DIVEN
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
-
-## About Laravel
-
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
-
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-## Laravel Sponsors
-
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
-
-### Premium Partners
-
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
+APi-DIVEN es un proyecto escrito en [LARAVEL](https://laravel.com/docs/9.x#why-laravel) que implementa los servicios RESET para la aplicación web y móvil de DIVEN.
+##Requisitos servidor
+- PHP >= 8.0
+- BCMath PHP Extension
+- Ctype PHP Extension
+- cURL PHP Extension
+- DOM PHP Extension
+- Fileinfo PHP Extension
+- JSON PHP Extension
+- Mbstring PHP Extension
+- OpenSSL PHP Extension
+- PCRE PHP Extension
+- PDO PHP Extension
+- Tokenizer PHP Extension
+- XML PHP Extension
+- COMPOSER >=2.1.6
+- [Para mayor información, VISITE LARAVEL DESPLIEGUE ](https://laravel.com/docs/9.x/deployment)
+## Requisitos base de datos
+- MARIADB >= 10.6.5-MariaDB-2 o compatibles
+##Requisitos para la configuración
+- Contar con el ID de cliente para la aplicación web de [Google Cloud Platform]([https://console.cloud.google.com/apis/credentials).
+- Crear una base de datos con el nombre api_diven.
+##Instalación
+###1. Instale las dependencias
+composer install
+###2. Configurar las variables de entorno
+2.1 Copie el archivo .env.example a la ruta raíz del proyecto con el nombre .env
+2.2 Llene las siguientes variables con la información requerida.
+* **APP_URL:** Url de la aplicación.
+* **APP_LOCATION:** Ruta absoluta donde se encuentra el proyecto.
+* **DB_USERNAME:** Usuario del servidor de base de datos.
+* **DB_PASSWORD:** Contraseña del servidor de base de datos.
+* **GOOGLE_APP_CLIENT_ID:** Client id proporcionado por google cloud.
+* **GOOGLE_APP_CLIENT_SECRET:** Client secret proporcionado por google cloud.
+* **GOOGLE_APP_REDIRECT:** *URL_APP*/auth/google/callback => Reemplacé *URL_APP* por la URL del APP
+* **GOOGLE_APP_REDIRECT_WITH_AUTH:** *URL_DIVEN_FRONENT*/login/google => Reemplacé *URL_DIVEN_FRONENT* por la url de **DIVEN-FRONENT**
+###3. Inserte las migraciones en la BD
+php artisan migrate
+###4. Inserte la configuración básica en la BD
+php artisan db:seed
+El usuario administrador **admin@ueb.edu.ec** y la contraseña **12345** se encuentran insertados en el archivo DatabaseSeeder ubicado en  database/seeders, si deseá cambiarlos reemplacé por un nuevo correo y contraseña.
+###5. Configure Passport
+php artisan passport:install
 ## License
+The API-DIVEN is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
