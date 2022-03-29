@@ -34,6 +34,7 @@ API-DIVEN es un proyecto escrito en [LARAVEL](https://laravel.com/docs/9.x#why-l
 
 ### 2. Configurar las variables de entorno
 2.1 Copie el archivo .env.example a la ruta raíz del proyecto con el nombre .env
+
 2.2 Llene las siguientes variables con la información requerida.
 * **APP_URL:** Url de la aplicación.
 * **APP_LOCATION:** Ruta absoluta donde se encuentra el proyecto.
