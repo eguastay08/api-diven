@@ -1,6 +1,6 @@
 ## API - DIVEN
 
-APi-DIVEN es un proyecto escrito en [LARAVEL](https://laravel.com/docs/9.x#why-laravel) que implementa los servicios RESET para la aplicación web y móvil de DIVEN.
+API-DIVEN es un proyecto escrito en [LARAVEL](https://laravel.com/docs/9.x#why-laravel) que implementa los servicios RESET para la aplicación web y móvil de DIVEN.
 
 ## Requisitos servidor
 
