@@ -296,6 +296,49 @@ class AnswerController extends Controller
                 return $this->response('false', Response::HTTP_OK, '200 OK',$json);
         }
     }
+
+    public function responseGraphs(Request $request, $id){
+        Controller::validatePermissions($request->user(),'POST','/projects/{project}/surveys');
+        $survey=Survey::findOrFail($id);
+
+        if(Project::select('projects.*')
+                ->join('project_user','projects.cod_project','project_user.project_cod_project')
+                ->where('project_user.user_id','=',$request->user()->id)
+                ->where('project_user.project_cod_project','=',$survey->cod_project)
+                ->first()||$request->user()->role->access
+                ->where('method','=','GET')
+                ->where('endpoint','=','/allprojects')
+                ->first()) {
+
+             $questions=Question::join('sections','sections.cod_section','questions.cod_section')
+                ->where('sections.cod_survey','=',$survey->cod_survey)
+                ->get();
+             $responses=[];
+             foreach ($questions  as $key =>$q){
+                 $key=$key+1;
+                 switch ($q->type){
+                     case 'dropdown':
+                         $question=[];
+                         $question['question']="$key. $q->question";
+                         $question['type']=$q->type;
+                         $question['detail']=$q->detail;
+                         $options= $q->options;
+                         $question['options']=[];
+                         foreach ($options as $o){
+                             $o->count=AnswersOptionsQuestions::where('cod_option','=',$o->cod_option)
+                                 ->where('cod_question','=',$q->cod_question)
+                                 ->count();
+                             $question['answers'][$o->option]=$o->count;
+                                $question['options'][]=$o->option;
+                         }
+                         $responses[]= $question;
+                         break;
+                 }
+             }
+            return $this->response('false', Response::HTTP_OK, '200 OK',$responses);
+        }
+    }
+
     /**
      * Display the specified resource.
      *
