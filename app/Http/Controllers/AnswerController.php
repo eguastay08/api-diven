@@ -317,7 +317,40 @@ class AnswerController extends Controller
              foreach ($questions  as $key =>$q){
                  $key=$key+1;
                  switch ($q->type){
+                     case 'short_answer':
+                     case 'numeric':
+                     case 'long_text':
+                         $question=[];
+                         $question['question']="$key. $q->question";
+                         $question['type']=$q->type;
+                         $question['detail']=$q->detail;
+                         $words = AnswersOptionsQuestions::where('cod_question','=',$q->cod_question)
+                             ->select(DB::raw("SUBSTRING_INDEX(answer_txt, ' ', 1) as name"), DB::raw('count(*) as value'))
+                             ->groupBy('name')
+                             ->get();
+                         $question['data']=$words;
+                             $responses[]= $question;
+                             break;
                      case 'dropdown':
+                     case 'multiple_choice':
+                         $question=[];
+                         $question['question']="$key. $q->question";
+                         $question['type']=$q->type;
+                         $question['detail']=$q->detail;
+                         $question['data']=array();
+                         $options= $q->options;
+                         foreach ($options as $o){
+                             $o->count=AnswersOptionsQuestions::where('cod_option','=',$o->cod_option)
+                                 ->where('cod_question','=',$q->cod_question)
+                                 ->count();
+                             $question['data'][] = [
+                                 'value' => $o->count,
+                                 'name' => $o->option
+                             ];
+                         }
+                     $responses[]= $question;
+                         break;
+                     case 'checkboxes':
                          $question=[];
                          $question['question']="$key. $q->question";
                          $question['type']=$q->type;
@@ -328,11 +361,12 @@ class AnswerController extends Controller
                              $o->count=AnswersOptionsQuestions::where('cod_option','=',$o->cod_option)
                                  ->where('cod_question','=',$q->cod_question)
                                  ->count();
-                             $question['answers'][$o->option]=$o->count;
+                             $question['answers'][]=$o->count;
                                 $question['options'][]=$o->option;
                          }
                          $responses[]= $question;
                          break;
+
                  }
              }
             return $this->response('false', Response::HTTP_OK, '200 OK',$responses);
