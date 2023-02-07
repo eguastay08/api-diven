@@ -313,6 +313,8 @@ class AnswerController extends Controller
              $questions=Question::join('sections','sections.cod_section','questions.cod_section')
                 ->where('sections.cod_survey','=',$survey->cod_survey)
                 ->get();
+             $answers=Answer::where('cod_survey','=',$survey->cod_survey)
+                ->get();
              $responses=[];
              foreach ($questions  as $key =>$q){
                  $key=$key+1;
