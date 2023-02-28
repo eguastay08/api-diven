@@ -80,7 +80,7 @@ class SurveyController extends Controller
 
             $validate=\Validator::make($data,[
                 'name'=>'required|unique:surveys,name,NULL,id,cod_project,'.$data['cod_project'],
-                'date_init' => 'required|date_format:Y-m-d\TH:i:s.\0\0\0\Z|after:today',
+                'date_init' => 'required|date_format:Y-m-d\TH:i:s.\0\0\0\Z',
                 'date_finally' => 'date_format:Y-m-d\TH:i:s.\0\0\0\Z|after:date_init',
                 'status'    => 'required|boolean',
                 'max_answers'=>'gte:-1',
@@ -121,6 +121,7 @@ class SurveyController extends Controller
                 ->where('endpoint','=','/allprojects')
                 ->first()){
             $data['sections']=$data->sections;
+            $data['tot_answers']=$data->answers->count();
             foreach ($data['sections'] as $sec){
                 $sec['questions']=Question::where('cod_section','=',$sec->cod_section)
                     ->orderby('order')

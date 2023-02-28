@@ -58,4 +58,8 @@ class Survey extends Model
     public function answers(){
         return $this->hasMany(Answer::class,'cod_survey');
     }
+
+    public function totAnswers(){
+        return $this->answers()->count();
+    }
 }

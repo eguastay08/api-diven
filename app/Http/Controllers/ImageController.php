@@ -68,7 +68,6 @@ class ImageController extends Controller
             $route = env('APP_LOCATION') . '/storage/app/' . $path;
             if (Storage::exists($path)) {
                 header("Content-type: image/jpeg");
-                header("Content-length: " . filesize($route));
                 header("Content-Disposition: inline; filename=" . $image['name']);
                 readfile($route);
             } else {

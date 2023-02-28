@@ -13,7 +13,8 @@ class AnswersOptionsQuestions extends Model
         'cod_question',
         'cod_option',
         'answer_txt',
-        'cod_answer'
+        'cod_answer',
+        'id_file'
     ];
 
     /**

@@ -188,7 +188,7 @@ class QuestionController extends Controller
             }
 
             $validate=\Validator::make($data,[
-                'type'=>'in:short_answer,long_text,multiple_choice,checkboxes,dropdown,date,time,datetime,numerical',
+                'type'=>'in:short_answer,long_text,multiple_choice,checkboxes,dropdown,date,time,datetime,numerical,image',
                 'required'=>'boolean',
             ]);
             if ($validate->fails())

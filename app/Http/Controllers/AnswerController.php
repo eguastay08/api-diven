@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Answer;
 use App\Models\AnswersOptionsQuestions;
+use App\Models\File;
 use App\Models\Project;
 use App\Models\Question;
 use App\Models\Survey;
@@ -42,7 +43,7 @@ class AnswerController extends Controller
      * @param $answer
      * @return bool
      */
-    public function saveAnswerQuestion(Request $request, Question $question, $cod_answer,$answer){
+    public function saveAnswerQuestion(Request $request, Question $question, $cod_answer,$answer, File $id_file=null){
         $data=[
             'cod_question'=>$question->cod_question,
             'cod_answer'=>$cod_answer
@@ -55,7 +56,7 @@ class AnswerController extends Controller
                     'answer_txt' => 'max:255',
                 ]);
                 if (!$validate->fails())
-                    AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
+                    AnswersOptionsQuestions::where('cod_quest`ion', '=', $question->cod_question)
                         ->where('cod_answer', '=', $cod_answer)
                         ->delete();
                 break;
@@ -128,6 +129,18 @@ class AnswerController extends Controller
                         ->where('cod_answer', '=', $cod_answer)
                         ->delete();
                 break;
+            case 'image';
+                $data['answer_txt']=$answer;
+                $data['id_file']=$id_file->id_file;
+                if($data['id_file']!=null) {
+                    $validate = \Validator::make($data, [
+                        'id_file' => 'exists:files,id_file',
+                    ]);
+                }
+                    AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
+                        ->where('cod_answer', '=', $cod_answer)
+                        ->delete();
+                break;
         }
 
         if (isset($validate)&&$validate->fails()) {
@@ -182,6 +195,7 @@ class AnswerController extends Controller
             foreach ($questions as $ans){
                 $data = [];
                 $data['cod_question']=$ans['cod_question'];
+                $data['image']=$ans['image'];
                 foreach ($request->answers as $res) {
                     if($ans['cod_question']==$res['cod_question']){
                         $data['answer']=$res['answer'];
@@ -218,7 +232,7 @@ class AnswerController extends Controller
                 }
 
                 if ($question->type != 'checkboxes') {
-                    if (!$this->saveAnswerQuestion($request, $question, $cod_answer, $data['answer'])) {
+                    if (!$this->saveAnswerQuestion($request, $question, $cod_answer, $data['answer'], $data['image'])) {
                         $error=[
                             "question"=>$question->question,
                             "cod_question"=>$question->cod_question

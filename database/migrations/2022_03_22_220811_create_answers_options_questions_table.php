@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('cod_question')->comment('Identifier question');
             $table->unsignedBigInteger('cod_option')->nullable()->comment('Identifier option');
             $table->text('answer_txt')->nullable()->comment('Response in case the type is text');
+            $table->unsignedBigInteger('id_file')->nullable()->comment('Identifier file');
             $table->unsignedBigInteger('cod_answer')->comment('identifier answer');
             $table->timestamps();
 
@@ -32,6 +33,9 @@ return new class extends Migration
             $table->foreign('cod_answer')
                 ->references('cod_answer')
                 ->on('answers')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreign('id_file')
+                ->references('id_file')
+                ->on('files')->cascadeOnUpdate()->cascadeOnDelete();
 
             $table->unique(['cod_question','cod_option','cod_answer'],'unique_cod_answer');
             $table->unique(['cod_question','cod_option','answer_txt'],'unique_answer_txt');
