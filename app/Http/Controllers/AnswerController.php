@@ -56,7 +56,7 @@ class AnswerController extends Controller
                     'answer_txt' => 'max:255',
                 ]);
                 if (!$validate->fails())
-                    AnswersOptionsQuestions::where('cod_quest`ion', '=', $question->cod_question)
+                    AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
                         ->where('cod_answer', '=', $cod_answer)
                         ->delete();
                 break;
@@ -101,7 +101,7 @@ class AnswerController extends Controller
                 $data['answer_txt']=$answer;
                 if($data['answer_txt']!=null) {
                     $validate = \Validator::make($data, [
-                        'answer_txt' => 'date_format:H:i',
+                        'answer_txt' => 'required',
                     ]);
                 }
                     AnswersOptionsQuestions::where('cod_question', '=', $question->cod_question)
@@ -130,8 +130,8 @@ class AnswerController extends Controller
                         ->delete();
                 break;
             case 'image';
-                $data['answer_txt']=$answer;
-                $data['id_file']=$id_file->id_file;
+                $data['answer_txt']=$answer['data'];
+                $data['id_file']=$answer['img'];
                 if($data['id_file']!=null) {
                     $validate = \Validator::make($data, [
                         'id_file' => 'exists:files,id_file',
@@ -334,7 +334,6 @@ class AnswerController extends Controller
                  $key=$key+1;
                  switch ($q->type){
                      case 'short_answer':
-                     case 'numeric':
                      case 'long_text':
                          $question=[];
                          $question['question']="$key. $q->question";
@@ -380,6 +379,18 @@ class AnswerController extends Controller
                              $question['answers'][]=$o->count;
                                 $question['options'][]=$o->option;
                          }
+                         $responses[]= $question;
+                         break;
+                     case 'image':
+                         $question=[];
+                         $question['question']="$key. $q->question";
+                         $question['type']=$q->type;
+                         $question['detail']=$q->detail;
+                         $data= AnswersOptionsQuestions::select('id','cod_question','cod_option','answer_txt','cod_answer','name as image','extension','type')
+                             ->where('cod_question','=',$q->cod_question)
+                             ->join('files','answers_options_questions.id_file','files.id_file')
+                             ->get();
+                         $question['data']=$data;
                          $responses[]= $question;
                          break;
 
