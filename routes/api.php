@@ -72,8 +72,8 @@ Route::prefix('v1')->group(function () {
         Route::delete('/options/{option}',[OptionController::class,'destroy']);
         Route::delete('/answers/{answer}',[AnswerController::class,'destroy']);
         Route::post('/image',[ImageController::class,'uploadImage']);
-        Route::get('/image/{img}',[ImageController::class,'viewImage']);
         Route::resource('/dpa',DpaController::class);
     });
+    Route::get('/image/{img}',[ImageController::class,'viewImage']);
 });
 
