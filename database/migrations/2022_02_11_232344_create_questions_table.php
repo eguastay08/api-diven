@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('question')->nullable()->comment('question text');
             $table->boolean('required')->default(false)->comment('if the question requires a mandatory answer');
             $table->text('image')->nullable()->comment('image url, in case the question requires it');
-            $table->enum('type',['short_answer','long_text','multiple_choice','checkboxes','dropdown','date','time','datetime','numerical'])->comment('type of question');
+            $table->enum('type',['short_answer','long_text','multiple_choice','checkboxes','dropdown','date','time','datetime','numerical','image'])->comment('type of question');
             $table->bigInteger('order')->comment('order questions');
             $table->timestamps();
             $table->unsignedBigInteger('cod_section')->comment('section identifier');
