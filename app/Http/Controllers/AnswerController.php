@@ -390,7 +390,13 @@ class AnswerController extends Controller
                              ->where('cod_question','=',$q->cod_question)
                              ->join('files','answers_options_questions.id_file','files.id_file')
                              ->get();
-                         $question['data']=$data;
+                         $words = AnswersOptionsQuestions::where('cod_question','=',$q->cod_question)
+                             ->select(DB::raw("SUBSTRING_INDEX(answer_txt, ' ', 1) as name"), DB::raw('count(*) as value'))
+                             ->groupBy('name')
+                             ->get();
+
+                         $question['data']=$words;
+                         $question['img']=$data;
                          $responses[]= $question;
                          break;
 
