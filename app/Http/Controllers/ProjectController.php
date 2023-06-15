@@ -83,7 +83,7 @@ class ProjectController extends Controller
         }
 
         $project=Project::create($data);
-
+        $project->users()->attach($request->user()->id);
         $log="The user '".$request->user()->id."' create user '$request->id'";
         $this->log('info',$log,'web',$request->user());
         return $this->response(false, Response::HTTP_CREATED, '201 Created',$project);

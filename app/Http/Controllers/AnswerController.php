@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Answer;
 use App\Models\AnswersOptionsQuestions;
 use App\Models\File;
+use App\Models\User;
 use App\Models\Project;
 use App\Models\Question;
 use App\Models\Survey;
@@ -279,6 +280,7 @@ class AnswerController extends Controller
                 $answers=Answer::where('cod_survey','=',$survey->cod_survey)
                     ->get();
                 $json=[];
+                $id=1;
                 foreach ($answers as $ans) {
                     $data=[];
                     $responses = AnswersOptionsQuestions::select('question', 'option', 'answer_txt', 'type','questions.cod_question','answers_options_questions.updated_at')
@@ -286,10 +288,12 @@ class AnswerController extends Controller
                         ->leftjoin('options', 'answers_options_questions.cod_option', 'options.cod_option')
                         ->where('cod_answer', '=', $ans->cod_answer)
                         ->get();
-                    $data['cod_answer'] = $ans->cod_answer;
+
+                    $usr=User::find($ans->id_user);
+                    $data['cod_answer'] = $id;
                     $data['latitude'] = $ans->latitude;
                     $data['longitude'] = $ans->longitude;
-                    $data['id_user'] = $ans->id_user;
+                    $data['name'] = $usr->name.' '.$usr->lastname;
                     $data['cod_survey'] = $ans->cod_survey;
                     $data['date']=date_format($ans->updated_at,"Y/m/d H:i:s");
 
@@ -306,6 +310,7 @@ class AnswerController extends Controller
                         }
                     }
                     $json[]= $data;
+                    $id++;
                 }
                 return $this->response('false', Response::HTTP_OK, '200 OK',$json);
         }
